@@ -1,0 +1,32 @@
+<?php
+defined('MOODLE_INTERNAL') || die();
+
+$string['modulename'] = 'HLSプレイヤー';
+$string['modulename_help'] = 'HLSプレイヤーモジュールを使用すると、m3u8ビデオストリームをコースに直接埋め込むことができます。URLを指定するか、ファイルをアップロードできます。';
+$string['modulenameplural'] = 'HLSプレイヤー';
+$string['pluginname'] = 'HLSプレイヤー';
+$string['pluginadministration'] = 'HLSプレイヤー管理';
+$string['hlsplayer:addinstance'] = '新しいHLSプレイヤーを追加する';
+$string['hlsplayer:view'] = 'HLSプレイヤーを表示する';
+$string['name'] = '名称';
+$string['content'] = 'ビデオコンテンツ';
+$string['sourcetype'] = 'ソースタイプ';
+$string['sourcetype_url'] = '外部URL';
+$string['sourcetype_file'] = 'アップロードファイル';
+$string['videourl'] = 'ビデオURL (.m3u8)';
+$string['videofile'] = 'ビデオファイル (.m3u8)';
+$string['novideo'] = '有効なビデオソースが見つかりません。アクティビティ設定を構成してください。';
+$string['error_invalidurl'] = 'URLは .m3u8 で終わる必要があります。';
+$string['allowspeeds'] = '再生速度の調整を許可する';
+$string['allowseeking'] = 'シーク操作を許可する';
+$string['allowseeking_help'] = '有効にした場合、学生はビデオ内を自由にシークできます。無効にした場合、すでに視聴した部分より先にはシークできません。';
+$string['viewreport'] = '進捗レポートを表示';
+$string['hlsplayer:viewreport'] = 'HLSプレイヤー進捗レポートを表示';
+$string['progress'] = '進捗';
+$string['lastaccess'] = '最終アクセス';
+$string['report'] = 'レポート';
+$string['completion'] = '完了要件';
+$string['completionminview'] = '視聴率を要求する';
+$string['completionminview_help'] = '学生がアクティビティを完了するには、ビデオの少なくともこの割合を視聴する必要があります。';
+$string['completionminview_desc'] = '学生はビデオの少なくとも {$a}% を視聴する必要があります。';
+$string['yourprogress'] = 'あなたの進捗';
