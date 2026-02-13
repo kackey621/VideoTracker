@@ -1,0 +1,54 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: moodle
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        moodle-branch: [MOODLE_405_STABLE, master]
+        php: [8.2, 8.3]
+        database: [pgsql]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli, pgsql, xml, soap, zip, gd, opcache
+          ini-values: max_input_vars=5000
+
+      - name: Deploy
+        uses: moodlehq/moodle-plugin-ci@v4
+        with:
+          moodle-branch: ${{ matrix.moodle-branch }}
+          database-type: ${{ matrix.database }}
+          database-user: postgres
+          database-password: password
+          plugin-name: mod_hlsplayer
+
+      - name: PHP Lint
+        run: moodle-plugin-ci phplint
+
+      - name: PHPUnit
+        run: moodle-plugin-ci phpunit
+
+      - name: Code Checker
+        continue-on-error: true
+        run: moodle-plugin-ci codechecker
