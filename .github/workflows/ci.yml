@@ -35,7 +35,7 @@ jobs:
           ini-values: max_input_vars=5000
 
       - name: Deploy
-        uses: moodlehq/moodle-plugin-ci@v4.5.10
+        uses: moodlehq/moodle-plugin-ci@v4.5.9
         with:
           moodle-branch: ${{ matrix.moodle-branch }}
           database-type: ${{ matrix.database }}
