@@ -34,21 +34,30 @@ jobs:
           extensions: mbstring, intl, mysqli, pgsql, xml, soap, zip, gd, opcache
           ini-values: max_input_vars=5000
 
-      - name: Deploy
-        uses: moodlehq/moodle-plugin-ci@v4.5.9
-        with:
-          moodle-branch: ${{ matrix.moodle-branch }}
-          database-type: ${{ matrix.database }}
-          database-user: postgres
-          database-password: password
-          plugin-name: mod_hlsplayer
+      - name: Setup moodle-plugin-ci
+        run: |
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          echo "$GITHUB_WORKSPACE/ci/bin" >> $GITHUB_PATH
+
+      - name: Install Plugin
+        working-directory: hlsplayer
+        run: moodle-plugin-ci install
+        env:
+          DB: ${{ matrix.database }}
+          MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          DB_USER: postgres
+          DB_PASS: password
+          DB_HOST: 127.0.0.1
 
       - name: PHP Lint
+        working-directory: hlsplayer
         run: moodle-plugin-ci phplint
 
       - name: PHPUnit
+        working-directory: hlsplayer
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
+        working-directory: hlsplayer
         continue-on-error: true
         run: moodle-plugin-ci codechecker
