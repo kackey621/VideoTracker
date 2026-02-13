@@ -32,6 +32,7 @@
         var player = videojs('{{id}}');
         var maxViewedTime = {{initial_progress}};
         var lastPosition = {{initial_lastposition}};
+        var lastValidTime = lastPosition; // Track valid position for revert
         var hlsplayerid = {{hlsplayerid}};
         var progressDisplay = document.getElementById('progress-percentage-{{id}}');
         
@@ -88,7 +89,15 @@
             var lastSaveTime = 0;
             player.on('timeupdate', function() {
                 var currentTime = player.currentTime();
-                if (currentTime > maxViewedTime) {
+                
+                // Track valid position for seek revert (buffer of 2s to allow for small jumps/loading)
+                if (currentTime <= maxViewedTime + 2.0) {
+                     lastValidTime = currentTime;
+                }
+
+                // Only update maxViewedTime if the new time is within a reasonable threshold (e.g. 1s)
+                // This prevents seeking forward from updating the max viewed time incorrectly.
+                if (currentTime > maxViewedTime && (currentTime - maxViewedTime) < 1.0) {
                     maxViewedTime = currentTime;
                 }
 
@@ -112,9 +121,9 @@
                     var currentTime = player.currentTime();
                     // We allow a small buffer (e.g., 1 second) or ensure strictness
                     if (currentTime > maxViewedTime + 1) {
-                         // If trying to seek past max viewed, return to max viewed
-                         console.log("Restricted seek attempt to " + currentTime + " (Max: " + maxViewedTime + ")");
-                         player.currentTime(maxViewedTime);
+                         // If trying to seek past max viewed, return to last valid position
+                         console.log("Restricted seek attempt to " + currentTime + ". Returning to: " + lastValidTime);
+                         player.currentTime(lastValidTime);
                     }
                 });
             }

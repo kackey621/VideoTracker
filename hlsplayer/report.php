@@ -13,20 +13,24 @@ $context = context_module::instance($cm->id);
 require_capability('mod/hlsplayer:viewreport', $context);
 
 $PAGE->set_url('/mod/hlsplayer/report.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($hlsplayer->name) . ': ' . get_string('report', 'mod_hlsplayer'));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title(format_string($hlsplayer->name ?? '') . ': ' . get_string('report', 'mod_hlsplayer'));
+$PAGE->set_heading(format_string($course->fullname ?? ''));
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('report', 'mod_hlsplayer'));
 
-// Get all users in the course
-$users = get_enrolled_users($context);
+// Check group mode
+$groupmode = groups_get_activity_groupmode($cm, $course);
+$currentgroup = groups_get_activity_group($cm, true);
+
+// Get all users in the course/group
+$users = get_enrolled_users($context, '', $currentgroup, 'u.*', null, 0, 0, true);
 
 // Get progress for these users
 $progressData = [];
 if ($users) {
     list($insql, $inparams) = $DB->get_in_or_equal(array_keys($users));
-    $sql = "SELECT userid, progress, timemodified 
+    $sql = "SELECT userid, progress, percentage, timemodified 
             FROM {hlsplayer_progress} 
             WHERE hlsplayerid = ? AND userid $insql";
     $params = array_merge([$hlsplayer->id], $inparams);

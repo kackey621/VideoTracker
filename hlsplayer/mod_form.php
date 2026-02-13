@@ -19,7 +19,7 @@ class mod_hlsplayer_mod_form extends moodleform_mod {
             $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', 'error', 255), 'maxlength', 255, 'client');
+        $mform->addRule('name', get_string('maximumchars', 'mod_hlsplayer', 255), 'maxlength', 255, 'client');
 
         $this->standard_intro_elements();
 
@@ -55,17 +55,24 @@ class mod_hlsplayer_mod_form extends moodleform_mod {
         $mform->addElement('filemanager', 'videofile', get_string('videofile', 'mod_hlsplayer'), null, $filemanageroptions);
         $mform->hideIf('videofile', 'sourcetype', 'eq', 'url');
 
-        // Completion settings
-        $mform->addElement('header', 'completionheader', get_string('completion', 'mod_hlsplayer'));
-        $mform->addElement('text', 'completionminview', get_string('completionminview', 'mod_hlsplayer'));
-        $mform->setType('completionminview', PARAM_INT);
-        $mform->setDefault('completionminview', 95);
-        $mform->addHelpButton('completionminview', 'completionminview', 'mod_hlsplayer');
-        
         $this->standard_grading_coursemodule_elements();
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
+    }
+
+    public function add_completion_rules() {
+        $mform = $this->_form;
+
+        $mform->addElement('text', 'completionminview', get_string('completionminview', 'mod_hlsplayer'), array('size' => 3));
+        $mform->setType('completionminview', PARAM_INT);
+        $mform->addHelpButton('completionminview', 'completionminview', 'mod_hlsplayer');
+
+        return array('completionminview');
+    }
+
+    public function completion_rule_enabled($data) {
+        return !empty($data['completionminview']);
     }
 
     public function validation($data, $files) {

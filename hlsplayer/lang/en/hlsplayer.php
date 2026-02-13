@@ -30,3 +30,12 @@ $string['completionminview'] = 'Require view percentage';
 $string['completionminview_help'] = 'Students must view at least this percentage of the video to complete the activity.';
 $string['completionminview_desc'] = 'Student must view at least {$a}% of the video.';
 $string['yourprogress'] = 'Your Progress';
+$string['maximumchars'] = 'Maximum of {$a} characters';
+
+// Privacy API
+$string['privacy:metadata:hlsplayer_progress'] = 'Stores the progress of users watching HLS videos.';
+$string['privacy:metadata:hlsplayer_progress:userid'] = 'The ID of the user.';
+$string['privacy:metadata:hlsplayer_progress:progress'] = 'The maximum time viewed in seconds.';
+$string['privacy:metadata:hlsplayer_progress:percentage'] = 'The maximum percentage viewed.';
+$string['privacy:metadata:hlsplayer_progress:lastposition'] = 'The last playback position timestamp.';
+$string['privacy:metadata:hlsplayer_progress:timemodified'] = 'The time when the progress was last updated.';

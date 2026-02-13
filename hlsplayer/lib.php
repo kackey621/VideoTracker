@@ -271,3 +271,23 @@ function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
 
     send_stored_file($file, 0, 0, true, $options);
 }
+
+/**
+ * Extend the settings navigation for the HLS Player activity.
+ *
+ * @param settings_navigation $settingsnav
+ * @param navigation_node $hlsplayernode
+ */
+function hlsplayer_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $hlsplayernode = null) {
+    global $PAGE;
+    $cm = $PAGE->cm;
+    if (!$cm) { 
+        return;
+    }
+    
+    $context = $cm->context;
+    if (has_capability('mod/hlsplayer:viewreport', $context)) {
+        $url = new moodle_url('/mod/hlsplayer/report.php', ['id' => $cm->id]);
+        $hlsplayernode->add(get_string('viewreport', 'mod_hlsplayer'), $url, navigation_node::TYPE_SETTING);
+    }
+}

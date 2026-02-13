@@ -1,5 +1,7 @@
 # HLS Player for Moodle
 
+![CI](https://github.com/akira/VideoTracker/actions/workflows/ci.yml/badge.svg)
+
 A Moodle activity module that enables HLS (HTTP Live Streaming) video playback using Video.js. This plugin supports `.m3u8` playlists from both external URLs and file uploads. It includes advanced features for education, such as seek restrictions, progress tracking, and automatic completion based on watch percentage.
 
 ## Features

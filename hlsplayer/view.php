@@ -26,14 +26,12 @@ $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 $PAGE->set_url('/mod/hlsplayer/view.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($hlsplayer->name));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title(format_string($hlsplayer->name ?? ''));
+$PAGE->set_heading(format_string($course->fullname ?? ''));
 
-// Check for report capability
-if (has_capability('mod/hlsplayer:viewreport', $context)) {
-    $reporturl = new moodle_url('/mod/hlsplayer/report.php', ['id' => $cm->id]);
-    echo $OUTPUT->action_link($reporturl, get_string('viewreport', 'mod_hlsplayer'));
-}
+echo $OUTPUT->header();
+
+
 
 // Determine Video Source
 $streamUrl = '';
