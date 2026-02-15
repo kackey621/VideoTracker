@@ -8,6 +8,7 @@ The **HLS Player** is an activity module for Moodle that enables seamless playba
 *   **Progress Tracking**: Automatically tracks student viewing progress (percentage watched and time viewed).
 *   **Resume Playback**: Remembers exactly where a student left off, allowing them to resume watching from that point.
 *   **Completion Conditions**: Set activity completion based on a minimum viewing percentage (e.g., "Student must watch 90% of the video").
+*   **Seek Restriction**: Option to prevent students from skipping ahead to parts of the video they haven't watched yet.
 *   **Playback Speed Control**: Allow students to adjust playback speed (0.5x, 1x, 1.5x, 2x).
 *   **Teacher Reports**: View a detailed report of all students' progress, including percentage viewed and last access time.
 *   **Responsive Design**: Mobile-friendly player that adapts to different screen sizes.
