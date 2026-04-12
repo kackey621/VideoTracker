@@ -153,9 +153,9 @@ function hlsplayer_update_grades($hlsplayer, $userid = 0, $nullifnone = false) {
 
     if ($hlsplayer->grade == 0) {
         hlsplayer_grade_item_update($hlsplayer);
-    } else if ($grades = hlsplayer_get_user_grades($hlsplayer, $userid)) {
+    } elseif ($grades = hlsplayer_get_user_grades($hlsplayer, $userid)) {
         hlsplayer_grade_item_update($hlsplayer, $grades);
-    } else if ($userid && $nullifnone) {
+    } elseif ($userid && $nullifnone) {
         $grade           = new stdClass();
         $grade->userid   = $userid;
         $grade->rawgrade = null;
@@ -241,8 +241,6 @@ function hlsplayer_grade_item_update($hlsplayer, $grades = null) {
  * @param stdClass $hlsplayer The activity record with form data.
  */
 function hlsplayer_process_file($hlsplayer) {
-    global $DB;
-
     if (!isset($hlsplayer->coursemodule)) {
         return;
     }
@@ -274,8 +272,6 @@ function hlsplayer_process_file($hlsplayer) {
  * @return bool False if file not found, does not return on success.
  */
 function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    global $DB;
-
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
@@ -288,7 +284,7 @@ function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
     $relativepath = implode('/', $args);
     $fullpath     = "/$context->id/mod_hlsplayer/$filearea/0/$relativepath";
 
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+    if (!($file = $fs->get_file_by_hash(sha1($fullpath))) || $file->is_directory()) {
         return false;
     }
 

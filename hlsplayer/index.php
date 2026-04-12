@@ -57,7 +57,7 @@ $table = new html_table();
 if ($course->format == 'weeks') {
     $table->head  = [get_string('week'), get_string('name')];
     $table->align = ['center', 'left'];
-} else if ($course->format == 'topics') {
+} elseif ($course->format == 'topics') {
     $table->head  = [get_string('topic'), get_string('name')];
     $table->align = ['center', 'left'];
 } else {
