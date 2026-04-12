@@ -32,7 +32,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_hlsplayer_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Defines the backup structure of the module.
      *

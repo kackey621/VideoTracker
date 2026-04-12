@@ -32,7 +32,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_hlsplayer_generator extends testing_module_generator {
-
     /**
      * Creates a new instance of the HLS Player activity.
      *

@@ -34,7 +34,6 @@ require_once($CFG->dirroot . '/mod/hlsplayer/backup/moodle2/restore_hlsplayer_st
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_hlsplayer_activity_task extends restore_activity_task {
-
     /**
      * No specific settings for this activity.
      */

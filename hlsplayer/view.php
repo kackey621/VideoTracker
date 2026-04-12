@@ -32,7 +32,7 @@ if ($id) {
     $cm        = get_coursemodule_from_id('hlsplayer', $id, 0, false, MUST_EXIST);
     $course    = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     $hlsplayer = $DB->get_record('hlsplayer', ['id' => $cm->instance], '*', MUST_EXIST);
-} elseif ($n) {
+} else if ($n) {
     $hlsplayer = $DB->get_record('hlsplayer', ['id' => $n], '*', MUST_EXIST);
     $course    = $DB->get_record('course', ['id' => $hlsplayer->course], '*', MUST_EXIST);
     $cm        = get_coursemodule_from_instance('hlsplayer', $hlsplayer->id, $course->id, false, MUST_EXIST);

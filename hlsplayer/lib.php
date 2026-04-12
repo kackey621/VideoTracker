@@ -159,9 +159,9 @@ function hlsplayer_update_grades($hlsplayer, $userid = 0, $nullifnone = false) {
 
     if ($hlsplayer->grade == 0) {
         hlsplayer_grade_item_update($hlsplayer);
-    } elseif ($grades = hlsplayer_get_user_grades($hlsplayer, $userid)) {
+    } else if ($grades = hlsplayer_get_user_grades($hlsplayer, $userid)) {
         hlsplayer_grade_item_update($hlsplayer, $grades);
-    } elseif ($userid && $nullifnone) {
+    } else if ($userid && $nullifnone) {
         $grade           = new stdClass();
         $grade->userid   = $userid;
         $grade->rawgrade = null;

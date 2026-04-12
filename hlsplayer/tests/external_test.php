@@ -35,7 +35,6 @@ use mod_hlsplayer\external;
  * @covers     \mod_hlsplayer\external::submit_progress
  */
 class external_test extends \advanced_testcase {
-
     /**
      * Test submit_progress records progress correctly.
      */

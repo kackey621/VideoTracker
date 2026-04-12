@@ -36,7 +36,6 @@ namespace mod_hlsplayer\tests;
  * @covers     ::hlsplayer_delete_instance
  */
 class lib_test extends \advanced_testcase {
-
     /**
      * Set up test environment.
      */

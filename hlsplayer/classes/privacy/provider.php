@@ -40,7 +40,6 @@ use core_privacy\local\request\writer;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider {
-
     /**
      * Returns meta data about this plugin.
      *
@@ -67,7 +66,8 @@ class provider implements
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
-        $contextlist->add_from_sql('SELECT c.id
+        $contextlist->add_from_sql(
+            'SELECT c.id
                                       FROM {context} c
                                       JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
                                       JOIN {modules} m ON m.id = cm.module AND m.name = :modname
