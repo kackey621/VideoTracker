@@ -107,7 +107,7 @@ if ($progressrecord) {
 
 if ($streamurl) {
     // Speed settings.
-    $playbackrates = $hlsplayer->allowspeeds ? [0.5, 1, 1.5, 2] : [1];
+    $playbackrates = $hlsplayer->allowspeeds ? [0.5, 1, 1.5, 2] : [];
 
     $templatecontext = [
         'stream_url'            => $streamurl,
