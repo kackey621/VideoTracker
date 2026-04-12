@@ -24,9 +24,6 @@
 
 namespace mod_hlsplayer\tests;
 
-global $CFG;
-require_once($CFG->dirroot . '/mod/hlsplayer/lib.php');
-
 /**
  * Unit tests for hlsplayer lib functions.
  *
@@ -39,6 +36,15 @@ require_once($CFG->dirroot . '/mod/hlsplayer/lib.php');
  * @covers     ::hlsplayer_delete_instance
  */
 class lib_test extends \advanced_testcase {
+
+    /**
+     * Set up test environment.
+     */
+    protected function setUp(): void {
+        global $CFG;
+        parent::setUp();
+        require_once($CFG->dirroot . '/mod/hlsplayer/lib.php');
+    }
 
     /**
      * Test that hlsplayer_supports returns correct values.
@@ -57,6 +63,7 @@ class lib_test extends \advanced_testcase {
      * Test that hlsplayer_add_instance creates a record.
      */
     public function test_hlsplayer_add_instance(): void {
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -75,7 +82,6 @@ class lib_test extends \advanced_testcase {
         $id = hlsplayer_add_instance($hlsplayer);
         $this->assertNotEmpty($id);
 
-        global $DB;
         $record = $DB->get_record('hlsplayer', ['id' => $id]);
         $this->assertEquals('Test HLS Player', $record->name);
         $this->assertEquals(1, $record->allowspeeds);
@@ -85,6 +91,7 @@ class lib_test extends \advanced_testcase {
      * Test that hlsplayer_update_instance updates a record.
      */
     public function test_hlsplayer_update_instance(): void {
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -104,7 +111,6 @@ class lib_test extends \advanced_testcase {
         $result = hlsplayer_update_instance($hlsplayer);
         $this->assertTrue($result);
 
-        global $DB;
         $record = $DB->get_record('hlsplayer', ['id' => $id]);
         $this->assertEquals('Updated HLS Player', $record->name);
     }
@@ -113,6 +119,7 @@ class lib_test extends \advanced_testcase {
      * Test that hlsplayer_delete_instance removes the record.
      */
     public function test_hlsplayer_delete_instance(): void {
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -128,7 +135,6 @@ class lib_test extends \advanced_testcase {
         $result = hlsplayer_delete_instance($id);
         $this->assertTrue($result);
 
-        global $DB;
         $this->assertFalse($DB->record_exists('hlsplayer', ['id' => $id]));
     }
 }

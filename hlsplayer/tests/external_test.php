@@ -24,9 +24,6 @@
 
 namespace mod_hlsplayer\tests;
 
-global $CFG;
-require_once($CFG->dirroot . '/mod/hlsplayer/classes/external.php');
-
 /**
  * Unit tests for mod_hlsplayer_external.
  *
@@ -38,9 +35,19 @@ require_once($CFG->dirroot . '/mod/hlsplayer/classes/external.php');
 class external_test extends \advanced_testcase {
 
     /**
+     * Set up test environment.
+     */
+    protected function setUp(): void {
+        global $CFG;
+        parent::setUp();
+        require_once($CFG->dirroot . '/mod/hlsplayer/classes/external.php');
+    }
+
+    /**
      * Test submit_progress records progress correctly.
      */
     public function test_submit_progress(): void {
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -64,7 +71,6 @@ class external_test extends \advanced_testcase {
         $this->assertEquals('ok', $result['status']);
 
         // Verify DB record.
-        global $DB;
         $progress = $DB->get_record('hlsplayer_progress', ['hlsplayerid' => $module->id, 'userid' => $user->id]);
         $this->assertNotFalse($progress);
         $this->assertEquals(10, $progress->progress);
@@ -89,10 +95,10 @@ class external_test extends \advanced_testcase {
      * Test that completion and grading trigger at threshold.
      */
     public function test_submit_progress_completion_and_grading(): void {
+        global $CFG;
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        global $DB, $CFG;
         require_once($CFG->libdir . '/completionlib.php');
 
         // Create course with completion enabled.
