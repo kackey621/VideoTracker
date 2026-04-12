@@ -10,8 +10,7 @@ jobs:
         image: postgres:13
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: moodle
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
@@ -42,22 +41,20 @@ jobs:
           echo $(cd ci && pwd)/vendor/bin >> $GITHUB_PATH
 
       - name: Install Plugin
-        run: moodle-plugin-ci install --plugin hlsplayer
+        run: moodle-plugin-ci install --plugin hlsplayer --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
           DB_USER: postgres
-          DB_PASS: password
-          DB_HOST: 127.0.0.1
 
       - name: PHP Lint
-        if: always()
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint
 
       - name: PHPUnit
-        if: always()
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
-        if: always()
-        run: moodle-plugin-ci codechecker
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci codechecker --max-warnings 0
