@@ -69,7 +69,7 @@ class mod_hlsplayer_external extends external_api {
             'lastposition' => $lastposition,
         ]);
 
-        $cm      = get_coursemodule_from_instance('hlsplayer', $params['hlsplayerid']);
+        $cm      = get_coursemodule_from_instance('hlsplayer', $params['hlsplayerid'], 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/hlsplayer:view', $context);

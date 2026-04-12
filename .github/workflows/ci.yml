@@ -50,13 +50,13 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: PHP Lint
-        if: ${{ !cancelled() }}
+        if: always()
         run: moodle-plugin-ci phplint
 
       - name: PHPUnit
-        if: ${{ !cancelled() }}
+        if: always()
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
-        if: ${{ !cancelled() }}
+        if: always()
         run: moodle-plugin-ci codechecker
