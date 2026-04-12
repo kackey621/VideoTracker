@@ -1,16 +1,17 @@
-name: CI
+name: Moodle Plugin CI
 
 on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-22.04
+
     services:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: 'postgres'
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
@@ -18,13 +19,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: [MOODLE_405_STABLE]
         php: ['8.2', '8.3']
+        moodle-branch: ['MOODLE_405_STABLE']
         database: [pgsql]
 
     steps:
-      - name: Checkout
+      - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          path: plugin
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -34,29 +37,63 @@ jobs:
           ini-values: max_input_vars=5000
           coverage: none
 
-      - name: Setup moodle-plugin-ci
+      - name: Initialise moodle-plugin-ci
         run: |
           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
-          echo $(cd ci && pwd)/bin >> $GITHUB_PATH
-          echo $(cd ci && pwd)/vendor/bin >> $GITHUB_PATH
+          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+          sudo locale-gen en_AU.UTF-8
+          echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
-      - name: Install Plugin
-        id: install
-        continue-on-error: true
-        run: moodle-plugin-ci install --plugin hlsplayer --db-host=127.0.0.1
+      - name: Install moodle-plugin-ci
+        run: moodle-plugin-ci install --plugin ./plugin/hlsplayer --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-          DB_USER: postgres
 
       - name: PHP Lint
-        if: always()
-        run: find hlsplayer -name "*.php" -print0 | xargs -0 -n1 php -l
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phplint
 
-      - name: PHPUnit
-        if: ${{ always() && steps.install.outcome == 'success' }}
+      - name: PHP Copy/Paste Detector
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpcpd
+
+      - name: PHP Mess Detector
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpmd
+
+      - name: Moodle Code Checker
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpcs --max-warnings 0
+
+      - name: Moodle PHPDoc Checker
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpdoc --max-warnings 0
+
+      - name: Validating
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci validate
+
+      - name: Check upgrade savepoints
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci savepoints
+
+      - name: Mustache Lint
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci mustache
+
+      - name: Grunt
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci grunt --max-lint-warnings 0
+
+      - name: PHPUnit tests
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit
 
-      - name: Code Checker
-        if: always()
-        run: phpcs --standard=moodle hlsplayer --max-warnings 0
+      - name: Mark cancelled jobs as failed
+        if: ${{ cancelled() }}
+        run: exit 1
