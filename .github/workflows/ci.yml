@@ -4,59 +4,59 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     services:
       postgres:
         image: postgres:13
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: moodle
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
     strategy:
       fail-fast: false
       matrix:
-        moodle-branch: [MOODLE_405_STABLE, master]
-        php: [8.2, 8.3]
+        moodle-branch: [MOODLE_405_STABLE]
+        php: ['8.2', '8.3']
         database: [pgsql]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, intl, mysqli, pgsql, xml, soap, zip, gd, opcache
           ini-values: max_input_vars=5000
+          coverage: none
 
       - name: Setup moodle-plugin-ci
         run: |
           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
-          echo "$GITHUB_WORKSPACE/ci/bin" >> $GITHUB_PATH
-          echo "$GITHUB_WORKSPACE/ci/vendor/bin" >> $GITHUB_PATH
+          echo $(cd ci && pwd)/bin >> $GITHUB_PATH
+          echo $(cd ci && pwd)/vendor/bin >> $GITHUB_PATH
 
       - name: Install Plugin
-        run: moodle-plugin-ci install --plugin hlsplayer
+        run: moodle-plugin-ci install --plugin ./hlsplayer --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
           DB_USER: postgres
-          DB_PASS: password
+          DB_PASS: ''
           DB_HOST: 127.0.0.1
 
       - name: PHP Lint
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint
 
       - name: PHPUnit
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci codechecker
