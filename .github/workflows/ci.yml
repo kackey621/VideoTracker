@@ -49,9 +49,13 @@ jobs:
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
           DB_USER: postgres
 
+      - name: Set plugin path when install skipped
+        if: ${{ steps.install.outcome != 'success' }}
+        run: echo "PLUGIN_DIR=${{ github.workspace }}/hlsplayer" > .env
+
       - name: PHP Lint
         if: always()
-        run: moodle-plugin-ci phplint hlsplayer
+        run: moodle-plugin-ci phplint
 
       - name: PHPUnit
         if: ${{ always() && steps.install.outcome == 'success' }}
@@ -59,4 +63,4 @@ jobs:
 
       - name: Code Checker
         if: always()
-        run: moodle-plugin-ci codechecker hlsplayer --max-warnings 0
+        run: moodle-plugin-ci codechecker --max-warnings 0
