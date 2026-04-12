@@ -1,1 +1,9 @@
+# Local moodle-plugin-ci artifacts
+moodle/
+moodledata/
+ci/
+.env
+
+# OS
 .DS_Store
+Thumbs.db

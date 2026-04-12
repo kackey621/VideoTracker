@@ -15,30 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External functions and web service definitions for the HLS Player module.
+ * The course module instance list viewed event for HLS Player.
  *
  * @package    mod_hlsplayer
  * @copyright  2025 hlsplayer contributors
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace mod_hlsplayer\event;
 
-$functions = [
-    'mod_hlsplayer_submit_progress' => [
-        'classname'   => 'mod_hlsplayer\external',
-        'methodname'  => 'submit_progress',
-        'description' => 'Updates user progress for an HLS player activity',
-        'type'        => 'write',
-        'ajax'        => true,
-    ],
-];
-
-$services = [
-    'HLS Player Services' => [
-        'functions'           => ['mod_hlsplayer_submit_progress'],
-        'requiredcapability'  => 'mod/hlsplayer:view',
-        'restrictedusers'     => 0,
-        'enabled'             => 1,
-    ],
-];
+/**
+ * Event triggered when a user views the list of HLS Player instances in a course.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
+    /**
+     * Returns the name of the event.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('eventcoursemoduleinstancelistviewed', 'mod_hlsplayer');
+    }
+}
