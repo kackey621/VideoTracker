@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['core/ajax', 'core/log'], function(Ajax, Log) {
+define(['core/ajax', 'core/log'], function (Ajax, Log) {
 
     /**
      * Save progress to the server via AJAX.
@@ -35,7 +35,7 @@ define(['core/ajax', 'core/log'], function(Ajax, Log) {
      * @param {number} currentPos   Current playback position in seconds.
      * @param {HTMLElement} display Progress percentage display element.
      */
-    var saveProgress = function(player, hlsplayerid, maxViewedTime, currentPos, display) {
+    var saveProgress = function (player, hlsplayerid, maxViewedTime, currentPos, display) {
         var percentage = 0;
         if (player.duration() > 0) {
             percentage = Math.floor((maxViewedTime / player.duration()) * 100);
@@ -65,7 +65,7 @@ define(['core/ajax', 'core/log'], function(Ajax, Log) {
          *
          * @param {string} playerId The HTML id of the video element.
          */
-        init: function(playerId) {
+        init: function (playerId) {
             var container = document.querySelector('[data-player-id="' + playerId + '"]');
             if (!container) {
                 Log.warn('mod_hlsplayer/player: container not found for player id ' + playerId);
@@ -88,11 +88,11 @@ define(['core/ajax', 'core/log'], function(Ajax, Log) {
 
             var player = videojs(playerId);
 
-            player.ready(function() {
+            player.ready(function () {
                 Log.debug('HLS Player ready. Max viewed: ' + maxViewedTime + ', Resume: ' + lastPosition);
 
                 // Update percentage display once duration is known.
-                player.on('loadedmetadata', function() {
+                player.on('loadedmetadata', function () {
                     if (player.duration() > 0 && maxViewedTime > 0) {
                         var pct = Math.min(100, Math.floor((maxViewedTime / player.duration()) * 100));
                         if (display) {
@@ -107,7 +107,7 @@ define(['core/ajax', 'core/log'], function(Ajax, Log) {
                 }
 
                 // Track max viewed time and save periodically.
-                player.on('timeupdate', function() {
+                player.on('timeupdate', function () {
                     var currentTime = player.currentTime();
 
                     // Track the furthest valid position for seek revert.
@@ -128,17 +128,17 @@ define(['core/ajax', 'core/log'], function(Ajax, Log) {
                     }
                 });
 
-                player.on('pause', function() {
+                player.on('pause', function () {
                     saveProgress(player, hlsplayerid, maxViewedTime, player.currentTime(), display);
                 });
 
-                player.on('ended', function() {
+                player.on('ended', function () {
                     saveProgress(player, hlsplayerid, maxViewedTime, player.currentTime(), display);
                 });
 
                 // Restrict forward seeking if disabled.
                 if (!allowSeeking) {
-                    player.on('seeking', function() {
+                    player.on('seeking', function () {
                         var currentTime = player.currentTime();
                         if (currentTime > maxViewedTime + 1) {
                             Log.debug('Seek restricted: ' + currentTime + ' -> ' + lastValidTime);
