@@ -38,10 +38,10 @@ jobs:
         run: |
           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
           echo "$GITHUB_WORKSPACE/ci/bin" >> $GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/ci/vendor/bin" >> $GITHUB_PATH
 
       - name: Install Plugin
-        working-directory: hlsplayer
-        run: moodle-plugin-ci install
+        run: moodle-plugin-ci install --plugin hlsplayer
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
@@ -50,14 +50,13 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: PHP Lint
-        working-directory: hlsplayer
+        if: ${{ always() }}
         run: moodle-plugin-ci phplint
 
       - name: PHPUnit
-        working-directory: hlsplayer
+        if: ${{ always() }}
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
-        working-directory: hlsplayer
-        continue-on-error: true
+        if: ${{ always() }}
         run: moodle-plugin-ci codechecker

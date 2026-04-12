@@ -15,30 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External functions and web service definitions for the HLS Player module.
+ * The course module viewed event for HLS Player.
  *
  * @package    mod_hlsplayer
  * @copyright  2025 hlsplayer contributors
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_hlsplayer\event;
+
 defined('MOODLE_INTERNAL') || die();
 
-$functions = [
-    'mod_hlsplayer_submit_progress' => [
-        'classname'   => 'mod_hlsplayer_external',
-        'methodname'  => 'submit_progress',
-        'description' => 'Updates user progress for an HLS player activity',
-        'type'        => 'write',
-        'ajax'        => true,
-    ],
-];
+/**
+ * Event triggered when a user views an HLS Player activity.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_viewed extends \core\event\course_module_viewed {
 
-$services = [
-    'HLS Player Services' => [
-        'functions'           => ['mod_hlsplayer_submit_progress'],
-        'requiredcapability'  => 'mod/hlsplayer:view',
-        'restrictedusers'     => 0,
-        'enabled'             => 1,
-    ],
-];
+    /**
+     * Initialise the event data.
+     */
+    protected function init() {
+        $this->data['objecttable'] = 'hlsplayer';
+        parent::init();
+    }
+
+    /**
+     * Returns the name of the event.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('eventcoursemoduleviewed', 'mod_hlsplayer');
+    }
+}

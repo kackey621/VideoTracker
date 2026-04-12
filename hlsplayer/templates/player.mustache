@@ -1,7 +1,51 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
 
-<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-<div class="hlsplayer-container" style="max-width: 800px; margin: 0 auto;">
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_hlsplayer/player
+
+    HLS Player template using Video.js.
+
+    Context variables required for this template:
+    * id - Unique player element ID
+    * stream_url - URL of the HLS stream (.m3u8)
+    * playback_rates - JSON array of allowed playback rates
+    * allowseeking - Boolean: whether forward seeking is allowed
+    * initial_progress - Maximum viewed time in seconds
+    * initial_lastposition - Last playback position in seconds
+    * hlsplayerid - The HLS player module instance ID
+
+    Example context (json):
+    {
+        "id": "hls-player-abc123",
+        "stream_url": "https://example.com/stream.m3u8",
+        "playback_rates": "[0.5, 1, 1.5, 2]",
+        "allowseeking": true,
+        "initial_progress": 0,
+        "initial_lastposition": 0,
+        "hlsplayerid": 1
+    }
+}}
+<div class="hlsplayer-container"
+     data-player-id="{{id}}"
+     data-hlsplayerid="{{hlsplayerid}}"
+     data-initial-progress="{{initial_progress}}"
+     data-initial-lastposition="{{initial_lastposition}}"
+     data-allowseeking="{{#allowseeking}}1{{/allowseeking}}{{^allowseeking}}0{{/allowseeking}}"
+     style="max-width: 800px; margin: 0 auto;">
     <video
         id="{{id}}"
         class="video-js vjs-default-skin vjs-big-play-centered"
@@ -14,9 +58,8 @@
     >
         <source src="{{stream_url}}" type="application/x-mpegURL">
         <p class="vjs-no-js">
-            To view this video please enable JavaScript, and consider upgrading to a
-            web browser that
-            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.
         </p>
     </video>
     <div class="hlsplayer-progress-display" style="margin-top: 10px; font-weight: bold;">
@@ -24,109 +67,8 @@
     </div>
 </div>
 
-<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-<script src="{{wwwroot}}/lib/javascript.php/{{sesskey}}/lib/ajax/ajax.js"></script> 
-<script>
-    // Ensure Video.js is loaded
-    document.addEventListener("DOMContentLoaded", function() {
-        var player = videojs('{{id}}');
-        var maxViewedTime = {{initial_progress}};
-        var lastPosition = {{initial_lastposition}};
-        var lastValidTime = lastPosition; // Track valid position for revert
-        var hlsplayerid = {{hlsplayerid}};
-        var progressDisplay = document.getElementById('progress-percentage-{{id}}');
-        
-        // Initial display update based on initial_progress/lastPosition
-        // We will update it when duration is available.
-
-        // Use Moodle's Ajax (load require if possible, but for simple template use plain fetch or Moodle's global if available)
-        // Since we are in a mustache template in Moodle, we often have access to AMD modules if we wrap in requires.
-        // For simplicity and robustness here without AMD wrapper complexity in this file:
-        function saveProgress(progress, currentPos) {
-            var percentage = 0;
-            if (player.duration() > 0) {
-                percentage = Math.floor((progress / player.duration()) * 100);
-            }
-            // Cap at 100
-            if (percentage > 100) percentage = 100;
-
-            // Update display
-            if (progressDisplay) {
-                progressDisplay.textContent = percentage;
-            }
-
-             require(['core/ajax'], function(ajax) {
-                ajax.call([{
-                    methodname: 'mod_hlsplayer_submit_progress',
-                    args: { 
-                        hlsplayerid: hlsplayerid, 
-                        progress: Math.floor(progress),
-                        percentage: percentage,
-                        lastposition: Math.floor(currentPos)
-                    }
-                }]);
-            });
-        }
-
-        player.ready(function() {
-            // Update display on load metadata
-            player.on('loadedmetadata', function() {
-                var percentage = 0;
-                if (player.duration() > 0 && maxViewedTime > 0) {
-                     percentage = Math.floor((maxViewedTime / player.duration()) * 100);
-                     if (percentage > 100) percentage = 100;
-                     if (progressDisplay) progressDisplay.textContent = percentage;
-                }
-            });
-            console.log('HLS Player Ready. Max viewed: ' + maxViewedTime + ', Resume at: ' + lastPosition);
-            
-            // Resume playback
-            if (lastPosition > 0) {
-                player.currentTime(lastPosition);
-            }
-
-            // Track maximum viewed time and current position
-            var lastSaveTime = 0;
-            player.on('timeupdate', function() {
-                var currentTime = player.currentTime();
-                
-                // Track valid position for seek revert (buffer of 2s to allow for small jumps/loading)
-                if (currentTime <= maxViewedTime + 2.0) {
-                     lastValidTime = currentTime;
-                }
-
-                // Only update maxViewedTime if the new time is within a reasonable threshold (e.g. 1s)
-                // This prevents seeking forward from updating the max viewed time incorrectly.
-                if (currentTime > maxViewedTime && (currentTime - maxViewedTime) < 1.0) {
-                    maxViewedTime = currentTime;
-                }
-
-                // Save every 10 seconds?
-                var now = Date.now();
-                if (now - lastSaveTime > 10000) {
-                    saveProgress(maxViewedTime, currentTime);
-                    lastSaveTime = now;
-                }
-            });
-            
-            // Save on pause/ended
-            player.on('pause', function() { saveProgress(maxViewedTime, player.currentTime()); });
-            player.on('ended', function() { saveProgress(maxViewedTime, player.currentTime()); });
-
-            // Prevent seeking forward (only if restriction is enabled)
-            var allowSeeking = {{allowseeking}};
-            
-            if (!allowSeeking) {
-                player.on('seeking', function() {
-                    var currentTime = player.currentTime();
-                    // We allow a small buffer (e.g., 1 second) or ensure strictness
-                    if (currentTime > maxViewedTime + 1) {
-                         // If trying to seek past max viewed, return to last valid position
-                         console.log("Restricted seek attempt to " + currentTime + ". Returning to: " + lastValidTime);
-                         player.currentTime(lastValidTime);
-                    }
-                });
-            }
-        });
-    });
-</script>
+{{#js}}
+require(['mod_hlsplayer/player'], function(HlsPlayer) {
+    HlsPlayer.init('{{id}}');
+});
+{{/js}}

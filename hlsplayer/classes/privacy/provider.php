@@ -1,18 +1,43 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Privacy API provider for the HLS Player plugin.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace mod_hlsplayer\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
-use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Privacy API provider for the HLS Player plugin.
+ * Privacy API implementation for the HLS Player plugin.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
     \core_privacy\local\metadata\provider,
@@ -26,9 +51,9 @@ class provider implements
      */
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table('hlsplayer_progress', [
-            'userid' => 'privacy:metadata:hlsplayer_progress:userid',
-            'progress' => 'privacy:metadata:hlsplayer_progress:progress',
-            'percentage' => 'privacy:metadata:hlsplayer_progress:percentage',
+            'userid'       => 'privacy:metadata:hlsplayer_progress:userid',
+            'progress'     => 'privacy:metadata:hlsplayer_progress:progress',
+            'percentage'   => 'privacy:metadata:hlsplayer_progress:percentage',
             'lastposition' => 'privacy:metadata:hlsplayer_progress:lastposition',
             'timemodified' => 'privacy:metadata:hlsplayer_progress:timemodified',
         ], 'privacy:metadata:hlsplayer_progress');
@@ -40,21 +65,21 @@ class provider implements
      * Get the list of contexts where a user has stored data.
      *
      * @param int $userid The user to search.
-     * @return contextlist $contextlist The contextlist containing the list of contexts for the user.
+     * @return contextlist The contextlist containing the list of contexts for the user.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
         $contextlist->add_from_sql('SELECT c.id
                                       FROM {context} c
-                                      JOIN {course_modules} cm ON cm.id = c.instanceid . AND c.contextlevel = :contextlevel
+                                      JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
                                       JOIN {modules} m ON m.id = cm.module AND m.name = :modname
                                       JOIN {hlsplayer} h ON h.id = cm.instance
                                       JOIN {hlsplayer_progress} hp ON hp.hlsplayerid = h.id
                                      WHERE hp.userid = :userid',
             [
                 'contextlevel' => CONTEXT_MODULE,
-                'modname' => 'hlsplayer',
-                'userid' => $userid,
+                'modname'      => 'hlsplayer',
+                'userid'       => $userid,
             ]
         );
         return $contextlist;
@@ -89,9 +114,9 @@ class provider implements
 
         foreach ($records as $record) {
             $context = \context_module::instance($record->cmid);
-            $data = (object) [
-                'progress' => $record->progress,
-                'percentage' => $record->percentage . '%',
+            $data    = (object) [
+                'progress'     => $record->progress,
+                'percentage'   => $record->percentage . '%',
                 'lastposition' => $record->lastposition,
                 'timemodified' => transform::datetime($record->timemodified),
             ];

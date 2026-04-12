@@ -1,4 +1,26 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Activity custom completion subclass for the HLS Player activity.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace mod_hlsplayer\completion;
 
@@ -8,6 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Activity custom completion subclass for the HLS Player activity.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_completion extends activity_custom_completion {
 
@@ -23,12 +49,12 @@ class custom_completion extends activity_custom_completion {
         $this->validate_rule($rule);
 
         $hlsplayer = $DB->get_record('hlsplayer', ['id' => $this->cm->instance], '*', MUST_EXIST);
-        $progress = $DB->get_record('hlsplayer_progress', [
+        $progress  = $DB->get_record('hlsplayer_progress', [
             'hlsplayerid' => $hlsplayer->id,
-            'userid' => $this->userid,
+            'userid'      => $this->userid,
         ]);
 
-        if ($rule == 'completionminview') {
+        if ($rule === 'completionminview') {
             if (!$progress) {
                 return COMPLETION_INCOMPLETE;
             }
@@ -58,7 +84,7 @@ class custom_completion extends activity_custom_completion {
     public function get_custom_rule_descriptions(): array {
         global $DB;
 
-        $hlsplayer = $DB->get_record('hlsplayer', ['id' => $this->cm->instance], '*', MUST_EXIST);
+        $hlsplayer         = $DB->get_record('hlsplayer', ['id' => $this->cm->instance], '*', MUST_EXIST);
         $completionminview = $hlsplayer->completionminview;
 
         return [

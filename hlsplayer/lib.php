@@ -1,10 +1,40 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Library of functions for mod_hlsplayer.
+ *
+ * @package    mod_hlsplayer
+ * @copyright  2025 hlsplayer contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Add a new HLS player instance.
+ *
+ * @param stdClass $hlsplayer The hlsplayer form data.
+ * @param moodleform|null $mform The form object.
+ * @return int The new instance id.
+ */
 function hlsplayer_add_instance($hlsplayer, $mform = null) {
     global $DB;
 
-    $hlsplayer->timecreated = time();
+    $hlsplayer->timecreated  = time();
     $hlsplayer->timemodified = time();
 
     $id = $DB->insert_record('hlsplayer', $hlsplayer);
@@ -15,17 +45,30 @@ function hlsplayer_add_instance($hlsplayer, $mform = null) {
     return $id;
 }
 
+/**
+ * Update an existing HLS player instance.
+ *
+ * @param stdClass $hlsplayer The hlsplayer form data.
+ * @param moodleform|null $mform The form object.
+ * @return bool True on success.
+ */
 function hlsplayer_update_instance($hlsplayer, $mform = null) {
     global $DB;
 
     $hlsplayer->timemodified = time();
-    $hlsplayer->id = $hlsplayer->instance;
+    $hlsplayer->id           = $hlsplayer->instance;
 
     hlsplayer_process_file($hlsplayer);
 
     return $DB->update_record('hlsplayer', $hlsplayer);
 }
 
+/**
+ * Delete an HLS player instance.
+ *
+ * @param int $id The instance id.
+ * @return bool True on success.
+ */
 function hlsplayer_delete_instance($id) {
     global $DB;
 
@@ -33,13 +76,20 @@ function hlsplayer_delete_instance($id) {
         return false;
     }
 
+    $DB->delete_records('hlsplayer_progress', ['hlsplayerid' => $hlsplayer->id]);
     $DB->delete_records('hlsplayer', ['id' => $hlsplayer->id]);
 
     return true;
 }
 
+/**
+ * Returns the features supported by the hlsplayer module.
+ *
+ * @param string $feature FEATURE_xx constant for requested feature.
+ * @return mixed True if module supports feature, null if doesn't know.
+ */
 function hlsplayer_supports($feature) {
-    switch($feature) {
+    switch ($feature) {
         case FEATURE_MOD_ARCHETYPE:
             return MOD_ARCHETYPE_RESOURCE;
         case FEATURE_GROUPS:
@@ -58,22 +108,46 @@ function hlsplayer_supports($feature) {
             return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
-        case FEATURE_COMPLETION_HAS_RULES: // Enable custom completion rules
+        case FEATURE_COMPLETION_HAS_RULES:
             return true;
-
         default:
             return null;
     }
 }
 
 /**
- * Update grades for a given hlsplayer activity. 
+ * Returns cached course module info for hlsplayer instances.
+ * This is used by Moodle's completion API to populate CM customdata
+ * with active custom completion rule values.
+ *
+ * @param stdClass $coursemodule The course module object.
+ * @return cached_cm_info|false
+ */
+function hlsplayer_get_coursemodule_info($coursemodule) {
+    global $DB;
+
+    if (!$hlsplayer = $DB->get_record('hlsplayer', ['id' => $coursemodule->instance])) {
+        return false;
+    }
+
+    $result       = new cached_cm_info();
+    $result->name = $hlsplayer->name;
+
+    if ($hlsplayer->completionminview > 0) {
+        $result->customdata['customcompletionrules']['completionminview'] = $hlsplayer->completionminview;
+    }
+
+    return $result;
+}
+
+/**
+ * Update grades for a given hlsplayer activity.
  *
  * @param stdClass $hlsplayer The activity record.
  * @param int $userid Specific user only, 0 means all users.
  * @param bool $nullifnone Return null if grade does not exist.
  */
-function hlsplayer_update_grades($hlsplayer, $userid=0, $nullifnone=false) {
+function hlsplayer_update_grades($hlsplayer, $userid = 0, $nullifnone = false) {
     global $CFG, $DB;
     require_once($CFG->libdir . '/gradelib.php');
 
@@ -82,8 +156,8 @@ function hlsplayer_update_grades($hlsplayer, $userid=0, $nullifnone=false) {
     } else if ($grades = hlsplayer_get_user_grades($hlsplayer, $userid)) {
         hlsplayer_grade_item_update($hlsplayer, $grades);
     } else if ($userid && $nullifnone) {
-        $grade = new stdClass();
-        $grade->userid = $userid;
+        $grade           = new stdClass();
+        $grade->userid   = $userid;
         $grade->rawgrade = null;
         hlsplayer_grade_item_update($hlsplayer, $grade);
     } else {
@@ -94,41 +168,34 @@ function hlsplayer_update_grades($hlsplayer, $userid=0, $nullifnone=false) {
 /**
  * Return grade for given user or all users.
  *
- * @param stdClass $hlsplayer
- * @param int $userid optional
- * @return array
+ * @param stdClass $hlsplayer The activity record.
+ * @param int $userid Optional user ID.
+ * @return array Array of grade objects keyed by userid.
  */
-function hlsplayer_get_user_grades($hlsplayer, $userid=0) {
+function hlsplayer_get_user_grades($hlsplayer, $userid = 0) {
     global $DB;
 
     $params = ['hlsplayerid' => $hlsplayer->id];
-    $sql = "SELECT p.userid, p.percentage 
-              FROM {hlsplayer_progress} p
-             WHERE p.hlsplayerid = :hlsplayerid";
-             
+    $sql    = "SELECT p.userid, p.percentage
+                 FROM {hlsplayer_progress} p
+                WHERE p.hlsplayerid = :hlsplayerid";
+
     if ($userid) {
         $params['userid'] = $userid;
         $sql .= " AND p.userid = :userid";
     }
 
     $progress = $DB->get_records_sql($sql, $params);
-    $grades = [];
+    $grades   = [];
 
     foreach ($progress as $p) {
-        // If they met the requirement, give them full points.
-        // Otherwise, no grade (or 0). 
-        // Here we implement: if percentage >= minview, 100% of grade. Else 0?
-        // Or if grade == 0, we delete grade?
-        
-        $grade = new stdClass();
+        $grade         = new stdClass();
         $grade->userid = $p->userid;
-        
+
         if ($hlsplayer->completionminview > 0 && $p->percentage >= $hlsplayer->completionminview) {
-             // Met requirement: Maximum grade
-             $grade->rawgrade = $hlsplayer->grade; 
+            $grade->rawgrade = $hlsplayer->grade;
         } else {
-             // Did not meet requirement yet
-             $grade->rawgrade = 0; // Or null? usually 0 if we want to show they started.
+            $grade->rawgrade = 0;
         }
         $grades[$p->userid] = $grade;
     }
@@ -137,17 +204,17 @@ function hlsplayer_get_user_grades($hlsplayer, $userid=0) {
 }
 
 /**
- * Update/create grade item for course module.
+ * Update/create grade item for the hlsplayer activity.
  *
- * @param stdClass $hlsplayer
- * @param mixed $grades
- * @return int
+ * @param stdClass $hlsplayer The activity record.
+ * @param mixed $grades Grade data or null.
+ * @return int Grade update result.
  */
-function hlsplayer_grade_item_update($hlsplayer, $grades=null) {
+function hlsplayer_grade_item_update($hlsplayer, $grades = null) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    $params = array('itemname' => $hlsplayer->name, 'idnumber' => $hlsplayer->coursemodule);
+    $params = ['itemname' => $hlsplayer->name, 'idnumber' => $hlsplayer->coursemodule];
 
     if ($hlsplayer->grade > 0) {
         $params['gradetype'] = GRADE_TYPE_VALUE;
@@ -159,83 +226,27 @@ function hlsplayer_grade_item_update($hlsplayer, $grades=null) {
 
     if ($grades === 'reset') {
         $params['reset'] = true;
-        $grades = null;
+        $grades          = null;
     }
 
     return grade_update('mod/hlsplayer', $hlsplayer->course, 'mod', 'hlsplayer', $hlsplayer->id, 0, $grades, $params);
 }
 
 /**
- * Obtain the completion state for this module.
+ * Process uploaded file for the hlsplayer activity.
  *
- * @param stdClass $course The course object.
- * @param stdClass $cm The course module object.
- * @param int $userid The user ID.
- * @param bool $type Type of check.
- * @return bool True if completed, false if not.
+ * @param stdClass $hlsplayer The activity record with form data.
  */
-function hlsplayer_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
-
-    $hlsplayer = $DB->get_record('hlsplayer', ['id' => $cm->instance], '*', MUST_EXIST);
-
-    if ($type == COMPLETION_AND) {
-        // We only support 'minview' rule for now via this custom check if Moodle calls it,
-        // but Moodle's standard custom rule handling typically uses get_completion_state return
-        // to determine if the *custom* part is met.
-        
-        // However, standard Moodle completion API for 'custom rules' usually involves 
-        // passing specific rule checks. 
-        // Simpler approach for custom completion 'view percentage':
-        // We will trigger completion update event externally when condition is met.
-        // But we also need to report status if asked.
-        
-        $progress = $DB->get_record('hlsplayer_progress', ['hlsplayerid' => $hlsplayer->id, 'userid' => $userid]);
-        if (!$progress) {
-            return false;
-        }
-        
-        if ($hlsplayer->completionminview > 0) {
-            if ($progress->percentage < $hlsplayer->completionminview) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-    
-    return false;
-}
-
-/**
- * Returns all other standard capabilities for this module.
- * @return array
- */
-function hlsplayer_get_completion_active_rule_descriptions($cm) {
-    global $DB;
-    $hlsplayer = $DB->get_record('hlsplayer', ['id' => $cm->instance], '*', MUST_EXIST);
-    
-    $info = [];
-    if ($hlsplayer->completionminview > 0) {
-        $info['completionminview'] = get_string('completionminview_desc', 'mod_hlsplayer', $hlsplayer->completionminview);
-    }
-    return $info;
-}
-
 function hlsplayer_process_file($hlsplayer) {
     global $DB;
 
     if (!isset($hlsplayer->coursemodule)) {
-        // Should not happen if called via standard add_moduleinfo
         return;
     }
 
     $context = context_module::instance($hlsplayer->coursemodule);
 
     if ($hlsplayer->sourcetype == 'file' && isset($hlsplayer->videofile)) {
-        $fs = get_file_storage();
-        
-        // Save the draft area files to the permanent area
         file_save_draft_area_files(
             $hlsplayer->videofile,
             $context->id,
@@ -248,9 +259,18 @@ function hlsplayer_process_file($hlsplayer) {
 }
 
 /**
- * Serves the files from the hlsplayer file area
+ * Serves the files from the hlsplayer file area.
+ *
+ * @param stdClass $course The course object.
+ * @param stdClass $cm The course module object.
+ * @param context $context The context.
+ * @param string $filearea The file area name.
+ * @param array $args Extra arguments.
+ * @param bool $forcedownload Force download flag.
+ * @param array $options Additional options.
+ * @return bool False if file not found, does not return on success.
  */
-function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $DB;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -261,9 +281,9 @@ function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
         return false;
     }
 
-    $fs = get_file_storage();
+    $fs           = get_file_storage();
     $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/mod_hlsplayer/$filearea/0/$relativepath";
+    $fullpath     = "/$context->id/mod_hlsplayer/$filearea/0/$relativepath";
 
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         return false;
@@ -275,16 +295,17 @@ function hlsplayer_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
 /**
  * Extend the settings navigation for the HLS Player activity.
  *
- * @param settings_navigation $settingsnav
- * @param navigation_node $hlsplayernode
+ * @param settings_navigation $settingsnav The settings navigation object.
+ * @param navigation_node|null $hlsplayernode The module navigation node.
  */
 function hlsplayer_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $hlsplayernode = null) {
     global $PAGE;
+
     $cm = $PAGE->cm;
-    if (!$cm) { 
+    if (!$cm) {
         return;
     }
-    
+
     $context = $cm->context;
     if (has_capability('mod/hlsplayer:viewreport', $context)) {
         $url = new moodle_url('/mod/hlsplayer/report.php', ['id' => $cm->id]);
