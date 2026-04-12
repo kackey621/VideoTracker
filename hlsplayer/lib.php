@@ -154,7 +154,7 @@ function hlsplayer_get_coursemodule_info($coursemodule) {
  * @param bool $nullifnone Return null if grade does not exist.
  */
 function hlsplayer_update_grades($hlsplayer, $userid = 0, $nullifnone = false) {
-    global $CFG, $DB;
+    global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
     if ($hlsplayer->grade == 0) {
