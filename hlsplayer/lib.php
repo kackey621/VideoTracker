@@ -214,7 +214,10 @@ function hlsplayer_grade_item_update($hlsplayer, $grades = null) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    $params = ['itemname' => $hlsplayer->name, 'idnumber' => $hlsplayer->coursemodule];
+    $params = ['itemname' => $hlsplayer->name];
+    if (isset($hlsplayer->coursemodule) && $hlsplayer->coursemodule !== '') {
+        $params['idnumber'] = $hlsplayer->coursemodule;
+    }
 
     if ($hlsplayer->grade > 0) {
         $params['gradetype'] = GRADE_TYPE_VALUE;
