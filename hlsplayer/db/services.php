@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     'mod_hlsplayer_submit_progress' => [
-        'classname'   => 'mod_hlsplayer_external',
+        'classname'   => 'mod_hlsplayer\external',
         'methodname'  => 'submit_progress',
         'description' => 'Updates user progress for an HLS player activity',
         'type'        => 'write',

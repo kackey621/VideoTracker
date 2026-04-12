@@ -22,12 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace mod_hlsplayer;
 
+use completion_info;
+use context_module;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use core_external\external_single_structure;
+use stdClass;
 
 /**
  * External functions for the HLS Player module.
@@ -36,7 +39,7 @@ use core_external\external_single_structure;
  * @copyright  2025 hlsplayer contributors
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_hlsplayer_external extends external_api {
+class external extends external_api {
 
     /**
      * Returns description of submit_progress() parameters.

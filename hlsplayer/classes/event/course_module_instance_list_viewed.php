@@ -34,13 +34,6 @@ namespace mod_hlsplayer\event;
 class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
 
     /**
-     * Initialise the event data.
-     */
-    protected function init() {
-        parent::init();
-    }
-
-    /**
      * Returns the name of the event.
      *
      * @return string

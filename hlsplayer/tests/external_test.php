@@ -24,24 +24,17 @@
 
 namespace mod_hlsplayer\tests;
 
+use mod_hlsplayer\external;
+
 /**
- * Unit tests for mod_hlsplayer_external.
+ * Unit tests for mod_hlsplayer\external.
  *
  * @package    mod_hlsplayer
  * @copyright  2025 hlsplayer contributors
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \mod_hlsplayer_external::submit_progress
+ * @covers     \mod_hlsplayer\external::submit_progress
  */
 class external_test extends \advanced_testcase {
-
-    /**
-     * Set up test environment.
-     */
-    protected function setUp(): void {
-        global $CFG;
-        parent::setUp();
-        require_once($CFG->dirroot . '/mod/hlsplayer/classes/external.php');
-    }
 
     /**
      * Test submit_progress records progress correctly.
@@ -66,8 +59,8 @@ class external_test extends \advanced_testcase {
         $this->setUser($user);
 
         // Initial progress submission.
-        $result = \mod_hlsplayer_external::submit_progress($module->id, 10, 10, 100);
-        $result = \core_external\external_api::clean_returnvalue(\mod_hlsplayer_external::submit_progress_returns(), $result);
+        $result = external::submit_progress($module->id, 10, 10, 100);
+        $result = \core_external\external_api::clean_returnvalue(external::submit_progress_returns(), $result);
         $this->assertEquals('ok', $result['status']);
 
         // Verify DB record.
@@ -78,14 +71,14 @@ class external_test extends \advanced_testcase {
         $this->assertEquals(100, $progress->lastposition);
 
         // Update with higher progress.
-        \mod_hlsplayer_external::submit_progress($module->id, 50, 50, 500);
+        external::submit_progress($module->id, 50, 50, 500);
         $progress = $DB->get_record('hlsplayer_progress', ['hlsplayerid' => $module->id, 'userid' => $user->id]);
         $this->assertEquals(50, $progress->progress);
         $this->assertEquals(50, $progress->percentage);
         $this->assertEquals(500, $progress->lastposition);
 
         // Update with same progress, different position.
-        \mod_hlsplayer_external::submit_progress($module->id, 50, 50, 200);
+        external::submit_progress($module->id, 50, 50, 200);
         $progress = $DB->get_record('hlsplayer_progress', ['hlsplayerid' => $module->id, 'userid' => $user->id]);
         $this->assertEquals(50, $progress->progress); // Max unchanged.
         $this->assertEquals(200, $progress->lastposition); // Last position updated.
@@ -116,7 +109,7 @@ class external_test extends \advanced_testcase {
         $this->setUser($user);
 
         // Submit progress below threshold.
-        \mod_hlsplayer_external::submit_progress($module->id, 50, 50, 50);
+        external::submit_progress($module->id, 50, 50, 50);
 
         $cm         = get_coursemodule_from_instance('hlsplayer', $module->id);
         $completion = new \completion_info($course);
@@ -124,7 +117,7 @@ class external_test extends \advanced_testcase {
         $this->assertNotEquals(COMPLETION_COMPLETE, $data->completionstate);
 
         // Submit progress meeting the threshold.
-        \mod_hlsplayer_external::submit_progress($module->id, 100, 95, 100);
+        external::submit_progress($module->id, 100, 95, 100);
 
         $data = $completion->get_data($cm, false, $user->id);
         $this->assertEquals(COMPLETION_COMPLETE, $data->completionstate);
