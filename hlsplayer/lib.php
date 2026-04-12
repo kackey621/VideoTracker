@@ -225,7 +225,7 @@ function hlsplayer_grade_item_update($hlsplayer, $grades = null) {
         $params['idnumber'] = $hlsplayer->coursemodule;
     }
 
-    if ($hlsplayer->grade > 0) {
+    if (!empty($hlsplayer->grade) && $hlsplayer->grade > 0) {
         $params['gradetype'] = GRADE_TYPE_VALUE;
         $params['grademax']  = $hlsplayer->grade;
         $params['grademin']  = 0;
