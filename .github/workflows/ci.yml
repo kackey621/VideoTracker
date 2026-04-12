@@ -50,13 +50,13 @@ jobs:
           DB_USER: postgres
 
       - name: PHP Lint
-        if: ${{ !cancelled() }}
+        if: always()
         run: moodle-plugin-ci phplint hlsplayer
 
       - name: PHPUnit
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        if: always()
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
-        if: ${{ !cancelled() }}
+        if: always()
         run: moodle-plugin-ci codechecker hlsplayer --max-warnings 0
