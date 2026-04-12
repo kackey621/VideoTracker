@@ -42,8 +42,7 @@ $PAGE->set_heading(format_string($course->fullname ?? ''));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('report', 'mod_hlsplayer'));
 
-// Check group mode.
-$groupmode    = groups_get_activity_groupmode($cm, $course);
+// Get current group.
 $currentgroup = groups_get_activity_group($cm, true);
 
 // Get all users in the course/group.
