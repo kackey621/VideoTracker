@@ -45,20 +45,8 @@ jobs:
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
-      - name: Debug plugin path
-        run: |
-          echo "Working directory: $(pwd)"
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-          ls -la plugin/hlsplayer/version.php || echo "version.php NOT FOUND"
-          cat plugin/hlsplayer/version.php || true
-          echo "---"
-          pg_isready -h 127.0.0.1 -p 5432 || echo "PostgreSQL not ready"
-          echo "---"
-          which moodle-plugin-ci || echo "moodle-plugin-ci not in PATH"
-          moodle-plugin-ci --version || echo "Cannot get moodle-plugin-ci version"
-
       - name: Install moodle-plugin-ci
-        run: moodle-plugin-ci install --plugin ./plugin/hlsplayer --db-host=127.0.0.1 -vvv
+        run: moodle-plugin-ci install --plugin ./plugin/hlsplayer --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
@@ -79,7 +67,7 @@ jobs:
 
       - name: Moodle Code Checker
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci phpcs --max-warnings 0
+        run: moodle-plugin-ci codechecker
 
       - name: Moodle PHPDoc Checker
         continue-on-error: true
