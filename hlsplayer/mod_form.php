@@ -80,7 +80,7 @@ class mod_hlsplayer_mod_form extends moodleform_mod {
 
         // File Field.
         $filemanageroptions                   = [];
-        $filemanageroptions['accepted_types'] = ['.m3u8'];
+        $filemanageroptions['accepted_types'] = ['.m3u8', '.ts', '.aac', '.mp4', '.key'];
         $filemanageroptions['maxbytes']       = 0;
         $filemanageroptions['maxfiles']       = -1;
         $filemanageroptions['mainfile']       = true;

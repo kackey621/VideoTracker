@@ -87,6 +87,10 @@ class custom_completion extends activity_custom_completion {
         $hlsplayer         = $DB->get_record('hlsplayer', ['id' => $this->cm->instance], '*', MUST_EXIST);
         $completionminview = $hlsplayer->completionminview;
 
+        if (empty($completionminview)) {
+            return [];
+        }
+
         return [
             'completionminview' => get_string('completionminview_desc', 'mod_hlsplayer', $completionminview),
         ];

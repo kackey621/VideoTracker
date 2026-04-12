@@ -62,7 +62,7 @@ class external_test extends \advanced_testcase {
 
         // Initial progress submission.
         $result = \mod_hlsplayer_external::submit_progress($module->id, 10, 10, 100);
-        $result = \external_api::clean_returnvalue(\mod_hlsplayer_external::submit_progress_returns(), $result);
+        $result = \core_external\external_api::clean_returnvalue(\mod_hlsplayer_external::submit_progress_returns(), $result);
         $this->assertEquals('ok', $result['status']);
 
         // Verify DB record.

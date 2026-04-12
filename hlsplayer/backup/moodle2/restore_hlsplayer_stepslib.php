@@ -65,6 +65,7 @@ class restore_hlsplayer_activity_structure_step extends restore_activity_structu
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
         $newitemid = $DB->insert_record('hlsplayer', $data);
+        $this->set_mapping('hlsplayer', $oldid, $newitemid);
         $this->apply_activity_instance($newitemid);
     }
 
@@ -82,7 +83,8 @@ class restore_hlsplayer_activity_structure_step extends restore_activity_structu
         $data->userid       = $this->get_mappingid('user', $data->userid);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
-        $DB->insert_record('hlsplayer_progress', $data);
+        $newitemid = $DB->insert_record('hlsplayer_progress', $data);
+        $this->set_mapping('hlsplayer_progress', $oldid, $newitemid);
     }
 
     /**
