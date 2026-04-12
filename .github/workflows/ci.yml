@@ -54,7 +54,7 @@ jobs:
         run: moodle-plugin-ci phplint hlsplayer
 
       - name: PHPUnit
-        if: always()
+        if: ${{ always() && steps.install.outcome == 'success' }}
         run: moodle-plugin-ci phpunit
 
       - name: Code Checker
