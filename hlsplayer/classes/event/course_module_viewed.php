@@ -24,8 +24,6 @@
 
 namespace mod_hlsplayer\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Event triggered when a user views an HLS Player activity.
  *

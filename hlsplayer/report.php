@@ -51,7 +51,7 @@ $users = get_enrolled_users($context, '', $currentgroup, 'u.*', null, 0, 0, true
 // Get progress for these users.
 $progressdata = [];
 if ($users) {
-    list($insql, $inparams) = $DB->get_in_or_equal(array_keys($users));
+    [$insql, $inparams] = $DB->get_in_or_equal(array_keys($users));
     $sql    = "SELECT userid, progress, percentage, timemodified
                  FROM {hlsplayer_progress}
                 WHERE hlsplayerid = ? AND userid $insql";

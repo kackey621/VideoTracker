@@ -26,8 +26,6 @@ namespace mod_hlsplayer\completion;
 
 use core_completion\activity_custom_completion;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Activity custom completion subclass for the HLS Player activity.
  *

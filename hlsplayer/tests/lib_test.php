@@ -24,8 +24,6 @@
 
 namespace mod_hlsplayer\tests;
 
-defined('MOODLE_INTERNAL') || die();
-
 global $CFG;
 require_once($CFG->dirroot . '/mod/hlsplayer/lib.php');
 

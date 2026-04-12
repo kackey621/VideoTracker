@@ -31,11 +31,6 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function xmldb_hlsplayer_upgrade($oldversion) {
-    global $DB;
-
-    $dbman = $DB->get_manager();
-
     // Upgrades can be added here.
-
     return true;
 }

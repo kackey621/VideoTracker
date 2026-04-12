@@ -41,6 +41,7 @@ function hlsplayer_add_instance($hlsplayer, $mform = null) {
     $hlsplayer->id = $id;
 
     hlsplayer_process_file($hlsplayer);
+    hlsplayer_grade_item_update($hlsplayer);
 
     return $id;
 }
@@ -59,8 +60,10 @@ function hlsplayer_update_instance($hlsplayer, $mform = null) {
     $hlsplayer->id           = $hlsplayer->instance;
 
     hlsplayer_process_file($hlsplayer);
+    $result = $DB->update_record('hlsplayer', $hlsplayer);
+    hlsplayer_grade_item_update($hlsplayer);
 
-    return $DB->update_record('hlsplayer', $hlsplayer);
+    return $result;
 }
 
 /**
@@ -70,7 +73,8 @@ function hlsplayer_update_instance($hlsplayer, $mform = null) {
  * @return bool True on success.
  */
 function hlsplayer_delete_instance($id) {
-    global $DB;
+    global $CFG, $DB;
+    require_once($CFG->libdir . '/gradelib.php');
 
     if (!$hlsplayer = $DB->get_record('hlsplayer', ['id' => $id])) {
         return false;
@@ -78,6 +82,8 @@ function hlsplayer_delete_instance($id) {
 
     $DB->delete_records('hlsplayer_progress', ['hlsplayerid' => $hlsplayer->id]);
     $DB->delete_records('hlsplayer', ['id' => $hlsplayer->id]);
+
+    grade_update('mod/hlsplayer', $hlsplayer->course, 'mod', 'hlsplayer', $hlsplayer->id, 0, null, ['deleted' => 1]);
 
     return true;
 }

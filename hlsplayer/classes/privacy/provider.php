@@ -30,8 +30,6 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy API implementation for the HLS Player plugin.
  *
@@ -99,7 +97,7 @@ class provider implements
 
         $user = $contextlist->get_user();
 
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
         $params = $contextparams + ['modname' => 'hlsplayer', 'contextlevel' => CONTEXT_MODULE, 'userid' => $user->id];
 
         $sql = "SELECT cm.id AS cmid, hp.progress, hp.percentage, hp.lastposition, hp.timemodified
