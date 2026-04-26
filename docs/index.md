@@ -4,8 +4,15 @@
 
 [![CI](https://github.com/kackey621/moodle-mod_hlsplayer/actions/workflows/ci.yml/badge.svg)](https://github.com/kackey621/moodle-mod_hlsplayer/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/kackey621/moodle-mod_hlsplayer/blob/main/hlsplayer/LICENSE)
-[![Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code-of-conduct.md)
-[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-bg.svg)](https://www.netlify.com)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code-of-conduct.md)
+[![Deploys by Netlify](https://www.netlify.com/assets/badges/netlify-badge-light.svg)](https://www.netlify.com)
+
+<div style="margin: 0.5rem 0 1rem;">
+  <a href="https://www.netlify.com" target="_blank" rel="noopener">
+    <img src="https://www.netlify.com/assets/badges/netlify-badge-light.svg" alt="This site is powered by Netlify" style="height:2rem;">
+  </a>
+  <span style="margin-left: 0.5rem; font-size: 0.85rem; color: var(--md-default-fg-color--light);">This site is powered by Netlify</span>
+</div>
 
 ---
 

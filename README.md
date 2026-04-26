@@ -1,9 +1,9 @@
 # HLS Player for Moodle
 
-![CI](https://github.com/kackey621/moodle-mod_hlsplayer/actions/workflows/ci.yml/badge.svg)
-[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-bg.svg)](https://www.netlify.com)
+[![CI](https://github.com/kackey621/moodle-mod_hlsplayer/actions/workflows/ci.yml/badge.svg)](https://github.com/kackey621/moodle-mod_hlsplayer/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](hlsplayer/LICENSE)
-[![Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Deploys by Netlify](https://www.netlify.com/assets/badges/netlify-badge-light.svg)](https://www.netlify.com)
 
 A Moodle activity module that enables HLS (HTTP Live Streaming) video playback using Video.js. This plugin supports `.m3u8` playlists from both external URLs and file uploads. It includes advanced features for education, such as seek restrictions, progress tracking, and automatic completion based on watch percentage.
 
