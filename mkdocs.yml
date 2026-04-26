@@ -1,0 +1,97 @@
+site_name: HLS Player for Moodle
+site_description: >-
+  A Moodle activity module that enables HLS video playback with progress
+  tracking, seek restriction, and completion rules. Free and open source (GPL v3).
+site_author: Akira
+site_url: https://your-site.netlify.app/
+repo_name: kackey621/moodle-mod_hlsplayer
+repo_url: https://github.com/kackey621/moodle-mod_hlsplayer
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/img/icon.png
+  favicon: assets/img/icon.png
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/kackey621/moodle-mod_hlsplayer
+
+extra_css:
+  - assets/css/extra.css
+
+copyright: >-
+  Copyright &copy; 2025 hlsplayer contributors &mdash;
+  <a href="https://github.com/kackey621/moodle-mod_hlsplayer/blob/main/hlsplayer/LICENSE">GPL v3 or later</a>
+  &mdash;
+  <a href="https://www.netlify.com" target="_blank" rel="noopener">
+    <img src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"
+         alt="Deploys by Netlify"
+         style="height:1.2em; vertical-align:middle; margin-left:4px;">
+  </a>
+
+plugins:
+  - search:
+      lang: en
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      base_path: .
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Configuration: configuration.md
+  - Usage:
+      - Teacher Guide: usage/teacher.md
+      - Student Guide: usage/student.md
+  - Features: features.md
+  - Completion: completion.md
+  - Privacy & GDPR: privacy.md
+  - Development:
+      - Architecture: development/architecture.md
+      - Contributing: development/contributing.md
+  - Changelog: changelog.md
+  - Code of Conduct: code-of-conduct.md
