@@ -53,10 +53,13 @@ copyright: >-
   Copyright &copy; 2025 hlsplayer contributors &mdash;
   <a href="https://github.com/kackey621/moodle-mod_hlsplayer/blob/main/hlsplayer/LICENSE">GPL v3 or later</a>
   &mdash;
+  <a href="/code-of-conduct/">Code of Conduct</a>
+  &mdash;
+  <a href="https://www.netlify.com" target="_blank" rel="noopener">This site is powered by Netlify</a>
   <a href="https://www.netlify.com" target="_blank" rel="noopener">
-    <img src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"
+    <img src="https://www.netlify.com/assets/badges/netlify-badge-light.svg"
          alt="Deploys by Netlify"
-         style="height:1.2em; vertical-align:middle; margin-left:4px;">
+         style="height:1.2em; vertical-align:middle; margin-left:6px;">
   </a>
 
 plugins:
