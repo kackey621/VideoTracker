@@ -1,8 +1,8 @@
 # HLS Player for Moodle
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](../LICENSE)
-[![Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](../CODE_OF_CONDUCT.md)
-[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-bg.svg)](https://www.netlify.com)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](../CODE_OF_CONDUCT.md)
+[![Deploys by Netlify](https://www.netlify.com/assets/badges/netlify-badge-light.svg)](https://www.netlify.com)
 
 The **HLS Player** is an activity module for Moodle that enables seamless playback of HTTP Live Streaming (HLS) videos (`.m3u8`) directly within a course. Designed for educational content delivery, it offers advanced features like progress tracking, completion conditions based on viewing percentage, and improved playback controls.
 
